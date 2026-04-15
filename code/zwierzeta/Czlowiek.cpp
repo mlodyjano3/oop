@@ -1,0 +1,77 @@
+#include "../../headers/zwierzeta/Czlowiek.hpp"
+#include "../../headers/parametry.hpp"
+
+Czlowiek::Czlowiek(Koordynaty koordynaty, Swiat* swiat) : Zwierze(TypZwierzecia::CZLOWIEK, koordynaty, swiat) {
+    this->sila = SILA_CZLOWIEK;
+    this->inicjatywa = INICJATYWA_CZLOWIEK;
+};
+
+
+void Czlowiek::ustawKierunek(char znak) {
+    kierunekRuchu.dx = 0;
+    kierunekRuchu.dy = 0;
+
+    switch (znak) {
+        case 'w':
+        case 'W':
+            kierunekRuchu.dy = -1;
+            break;
+        case 's':
+        case 'S':
+            kierunekRuchu.dy = 1;
+            break;
+        case 'a':
+        case 'A':
+            kierunekRuchu.dx = -1;
+            break;
+        case 'd':
+        case 'D':
+            kierunekRuchu.dx = 1;
+            break;
+        default:
+            break;
+    };
+};
+
+void Czlowiek::akcja() {
+    Koordynaty noweKoordynaty = {
+        this->koordynaty.x + kierunekRuchu.dx,
+        this->koordynaty.y + kierunekRuchu.dy
+    };
+
+    if (
+        noweKoordynaty.x == this->koordynaty.x 
+        && noweKoordynaty.y == this->koordynaty.y) {
+        return; 
+    };
+
+    if (swiat->czyNaMapie(noweKoordynaty)) {
+        bool czyWolne = swiat->czyWolne(noweKoordynaty);
+
+        if (czyWolne) {
+
+            swiat->zmienKoordynatyOrganizmu(this, noweKoordynaty);
+            this->koordynaty = noweKoordynaty;
+
+        } else {
+
+            Organizm* kolidujacy = swiat->getOrganizmAt(noweKoordynaty);
+            
+            if (kolidujacy != nullptr) {
+                this->kolizja(kolidujacy);
+            };
+        };
+    };
+
+    kierunekRuchu.dx = 0;
+    kierunekRuchu.dy = 0;
+};
+
+Kierunek Czlowiek::getKierunek() const {
+    return kierunekRuchu;
+};
+
+
+char Czlowiek::GetSymbol() {
+    return '&';
+};
