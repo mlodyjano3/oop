@@ -1,6 +1,7 @@
 #ifndef PARAMETRY_HPP
 #define PARAMETRY_HPP
 
+const std::string NAZWA_PLIKU_ZAPISU = "swiat.txt";
 
 
 // ------------------------------------------------------------------------
@@ -11,8 +12,8 @@ const char DEKORATOR_PIONOWY = '|';
 
 const int PIXELE_PER_POLE = 1 + 2; // 1 na znak + 2 na padding
 
-const int WYSOKOSC_PLANSZY = 20; // ile pol jest na planszy
-const int SZEROKOSC_PLANSZY = 20;
+const int WYSOKOSC_PLANSZY = 30; // ile pol jest na planszy
+const int SZEROKOSC_PLANSZY = 30;
 
 const int ILOSC_PIXELI_NA_MAPIE = WYSOKOSC_PLANSZY * SZEROKOSC_PLANSZY * PIXELE_PER_POLE * PIXELE_PER_POLE;
 

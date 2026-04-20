@@ -9,15 +9,14 @@ int main() {
     // init swiata
     Swiat swiat(SZEROKOSC_PLANSZY, WYSOKOSC_PLANSZY);
 
+    swiat.rysujInterfejs();
+
     while (true ) {
         
         swiat.wezInputUzytkownika();
         swiat.wykonajTure();
-        swiat.rysujSwiat();
-
-        
-
-        
+        swiat.rysujInterfejs();
+   
     }
     return 0;
 };

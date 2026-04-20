@@ -6,13 +6,17 @@
 #include <string>
 #include <iostream>
 #include "Organizm.hpp"
-#include "./zwierzeta/Czlowiek.hpp"
+#include "Zwierze.hpp"
+#include "parametry.hpp"
 
 class Organizm;
+class Zwierze;
+class Czlowiek;
 
 class Swiat {
     private:
         Wymiary wymiary;
+        int tura;
 
         std::vector<Organizm*> organizmy;
         std::vector<std::vector<Organizm*>> plansza;
@@ -45,6 +49,11 @@ class Swiat {
         void rysujKomunikaty();
 
         void dodajKomunikat(TypKomunikatu typ);
+
+
+
+        void zapiszStanSwiata();
+        void wczytajStanSwiata();
 
         ~Swiat();
 };

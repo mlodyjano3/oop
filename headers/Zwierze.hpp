@@ -1,7 +1,8 @@
 #ifndef ZWIERZE_HPP
 #define ZWIERZE_HPP
 
-#include "Organizm.hpp"
+#include "./Organizm.hpp"
+
 #include "structures.hpp"
 
 class Zwierze : public Organizm {

@@ -1,5 +1,6 @@
 #include "../../headers/zwierzeta/Czlowiek.hpp"
 #include "../../headers/parametry.hpp"
+#include "../../headers/Swiat.hpp"
 
 Czlowiek::Czlowiek(Koordynaty koordynaty, Swiat* swiat) : Zwierze(TypZwierzecia::CZLOWIEK, koordynaty, swiat) {
     this->sila = SILA_CZLOWIEK;
@@ -12,18 +13,22 @@ void Czlowiek::ustawKierunek(char znak) {
     kierunekRuchu.dy = 0;
 
     switch (znak) {
+        case 72:
         case 'w':
         case 'W':
             kierunekRuchu.dy = -1;
             break;
+        case 80:
         case 's':
         case 'S':
             kierunekRuchu.dy = 1;
             break;
+        case 75:
         case 'a':
         case 'A':
             kierunekRuchu.dx = -1;
             break;
+        case 77:
         case 'd':
         case 'D':
             kierunekRuchu.dx = 1;

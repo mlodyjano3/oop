@@ -1,9 +1,12 @@
-#include <iostream>
+
 #include "../headers/structures.hpp"
 #include "../headers/Swiat.hpp"
-#include <algorithm>
 #include "../headers/Organizm.hpp"
 #include "../headers/parametry.hpp"
+#include "../headers/zwierzeta/Czlowiek.hpp"
+
+#include <iostream>
+#include <algorithm>
 #include <chrono>
 #include <iomanip>
 #include <sstream>
@@ -11,6 +14,7 @@
 Swiat::Swiat(int dlugosc, int wysokosc) {
     this->wymiary.dlugosc = dlugosc;
     this->wymiary.wysokosc = wysokosc;
+    this->tura = 1;
 
     plansza.resize(wymiary.wysokosc, std::vector<Organizm*>(wymiary.dlugosc, nullptr));
 
@@ -102,8 +106,10 @@ bool Swiat::czyWolne(Koordynaty koordynaty) {
 
 void Swiat::wezInputUzytkownika() {
     char znak;
-    std::cout << "Podaj kierunek ruchu (w - gora, s - dol, a - lewo, d - prawo): ";
+    rysujPoziomaLinie();
+    rysujTekst("Wprowadz kierunek ruchu czlowieka (w - gora, s - dol, a - lewo, d - prawo): ");
     std::cin >> znak;
+
 
     czlowiek->ustawKierunek(znak);
 };
@@ -132,6 +138,7 @@ void Swiat::wykonajTure() {
     };
 
     dodajKomunikat(TypKomunikatu::WykonanieTury);
+    tura++;
 };
 
 void Swiat::rysujPoziomaLinie() {
@@ -188,7 +195,7 @@ void Swiat::rysujInterfejs() {
 
     rysujPoziomaLinie(); // koniec legendy, poczatek interface
 
-    rysujTekst("Tura: " + std::to_string(1));
+    rysujTekst("Tura: " + std::to_string(tura));
     rysujTekst("Liczba organizmow: " + std::to_string(organizmy.size()));
 
     rysujPoziomaLinie(); // koniec interface, swiat
@@ -240,6 +247,14 @@ bool Swiat::czyNaMapie(Koordynaty koordynaty) {
         koordynaty.x >= 0 && koordynaty.x < wymiary.dlugosc &&
         koordynaty.y >= 0 && koordynaty.y < wymiary.wysokosc
     );
+};
+
+
+void Swiat::zapiszStanSwiata() {
+
+}
+
+void Swiat::wczytajStanSwiata() {
 };
 
 Swiat::~Swiat() {

@@ -2,7 +2,8 @@
 #define ORGANIZM_HPP
 
 #include "structures.hpp"
-#include "Swiat.hpp"
+
+class Swiat;
 
 
 class Organizm {
@@ -29,7 +30,9 @@ class Organizm {
         int getWiek() const;
         void zwiekszWiek();
         int getSila() const;
+        TypOrganizmu getTypOrganizmu() const;
         Koordynaty wybierzNoweKoordynaty() const;
+        Koordynaty wybierzNoweKoordynatyNoworodka(Organizm* rodzic, Organizm* rodzic2) const;
         
 
 
