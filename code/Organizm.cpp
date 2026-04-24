@@ -30,7 +30,15 @@ int Organizm::getSila() const {
 
 TypOrganizmu Organizm::getTypOrganizmu() const { 
     return this->typOrganizmu; 
-}
+};
+
+void Organizm::setKoordynaty(Koordynaty noweKoordynaty) {
+    this->koordynaty = noweKoordynaty;
+};
+
+void Organizm::setSila(int nowaSila) {
+    this->sila = nowaSila;
+};
 
 Koordynaty Organizm::wybierzNoweKoordynaty() const {
     Koordynaty stareKoordynaty = this->getKoordynaty();

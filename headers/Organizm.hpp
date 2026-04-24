@@ -31,6 +31,10 @@ class Organizm {
         void zwiekszWiek();
         int getSila() const;
         TypOrganizmu getTypOrganizmu() const;
+
+        void setKoordynaty(Koordynaty noweKoordynaty);
+        void setSila(int nowaSila);
+
         Koordynaty wybierzNoweKoordynaty() const;
         Koordynaty wybierzNoweKoordynatyNoworodka(Organizm* rodzic, Organizm* rodzic2) const;
         

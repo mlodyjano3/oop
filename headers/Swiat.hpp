@@ -49,6 +49,7 @@ class Swiat {
         void rysujKomunikaty();
 
         void dodajKomunikat(TypKomunikatu typ);
+        void dodajKomunikat(std::string tekst);
 
 
 

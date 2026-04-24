@@ -1,6 +1,8 @@
 #ifndef PARAMETRY_HPP
 #define PARAMETRY_HPP
 
+#include <string>
+
 const std::string NAZWA_PLIKU_ZAPISU = "swiat.txt";
 
 

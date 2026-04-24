@@ -1,12 +1,12 @@
-#include "Zwierze.hpp"
+#include "../headers/Zwierze.hpp"
 #include "../headers/Swiat.hpp"
 
-#include "../../headers/zwierzeta/Wilk.hpp"
-#include "../../headers/zwierzeta/Owca.hpp"
-#include "../../headers/zwierzeta/Lis.hpp"
-#include "../../headers/zwierzeta/Zolw.hpp"
-#include "../../headers/zwierzeta/Antylopa.hpp"
-#include "../../headers/zwierzeta/Cyberowca.hpp"
+#include "../headers/zwierzeta/Wilk.hpp"
+#include "../headers/zwierzeta/Owca.hpp"
+#include "../headers/zwierzeta/Lis.hpp"
+#include "../headers/zwierzeta/Zolw.hpp"
+#include "../headers/zwierzeta/Antylopa.hpp"
+#include "../headers/zwierzeta/Cyberowca.hpp"
 
 
 Zwierze::Zwierze(TypZwierzecia typ, Koordynaty koordynaty, Swiat* swiat) {
@@ -64,9 +64,16 @@ void Zwierze::kolizja(Organizm* kolidujacy) {
             }
 
             if (noworodek != nullptr) {
+                if (swiat->czyWolne(noworodek->getKoordynaty())) {
+                    swiat->zmienKoordynatyOrganizmu(noworodek, koordynaty_noworodka);
+                } else {
+                    // usuwanie noworodka jezeli nie ma miejsac na niego 
+                    delete noworodek;
+                    return;
+                }
                 swiat->dodajOrganizm(noworodek);
-                swiat->dodajKomunikat(TypKomunikatu::Rozmnozenie); // log rozmnozenia
-            }
+                std::string komunikat = "Nowe zwierze: " + std::to_string(noworodek->getTypOrganizmu()) + " na koordynatach: (" + std::to_string(noworodek->getKoordynaty().x) + ", " + std::to_string(noworodek->getKoordynaty().y) + ")";
+            };
             
             return;
         };
@@ -74,13 +81,17 @@ void Zwierze::kolizja(Organizm* kolidujacy) {
         // walka
         int this_sila = this->getSila();
         int kolidujacy_sila = kolidujacy->getSila();
-
+        
         if (this_sila >= kolidujacy_sila) {
             // wygrywa obiekt this
+            // Koordynaty koordy_kolidujacego = kolidujacy->getKoordynaty();
             swiat->usunOrganizm(kolidujacy);
+            // swiat->zmienKoordynatyOrganizmu(this, koordy_kolidujacego); 
         } else {
             // wygrywa obiekt kolidujacy
+            // Koordynaty koordy_this = this->getKoordynaty();
             swiat->usunOrganizm(this);
+            // swiat->zmienKoordynatyOrganizmu(kolidujacy, koordy_this);
         };
     };
 };

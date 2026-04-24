@@ -11,6 +11,16 @@
 #include <iomanip>
 #include <sstream>
 
+#include "../headers/zwierzeta/Czlowiek.hpp"
+#include "../headers/zwierzeta/Antylopa.hpp"
+#include "../headers/zwierzeta/Cyberowca.hpp"
+#include "../headers/zwierzeta/Lis.hpp"
+#include "../headers/zwierzeta/Owca.hpp"
+#include "../headers/zwierzeta/Wilk.hpp"
+#include "../headers/zwierzeta/Zolw.hpp"
+
+
+
 Swiat::Swiat(int dlugosc, int wysokosc) {
     this->wymiary.dlugosc = dlugosc;
     this->wymiary.wysokosc = wysokosc;
@@ -20,7 +30,41 @@ Swiat::Swiat(int dlugosc, int wysokosc) {
 
     this->czlowiek = new Czlowiek({wymiary.dlugosc / 2, wymiary.wysokosc / 2}, this);
 
+    // init jakichs tam zwierzat na mape
+    Zolw *zolw1 = new Zolw({1, 1}, this);
+    Zolw *zolw2 = new Zolw({1, 5}, this);
+
+    Lis *lis1 = new Lis({3, 3}, this);
+    Lis *lis2 = new Lis({4, 10}, this);
+
+    Antylopa *antylopa1 = new Antylopa({8, 5}, this);
+    Antylopa *antylopa2 = new Antylopa({5, 6}, this);
+
+    Wilk *wilk1 = new Wilk({10, 2}, this);
+    Wilk *wilk2 = new Wilk({12, 7}, this);
+
+    Owca *owca1 = new Owca({15, 3}, this);
+    Owca *owca2 = new Owca({14, 8}, this);
+
+    Cyberowca *cyberowca1 = new Cyberowca({2, 2}, this);
+    Cyberowca *cyberowca2 = new Cyberowca({9, 9}, this);
+    //
+
+    // dodawanie organizmow do swiata - zwierzeta plus czloiwek
     dodajOrganizm(this->czlowiek);
+    dodajOrganizm(zolw1);
+    dodajOrganizm(zolw2);
+    dodajOrganizm(lis1);
+    dodajOrganizm(lis2);
+    dodajOrganizm(antylopa1);
+    dodajOrganizm(antylopa2);
+    dodajOrganizm(wilk1);
+    dodajOrganizm(wilk2);
+    dodajOrganizm(owca1);
+    dodajOrganizm(owca2);
+    dodajOrganizm(cyberowca1);
+    dodajOrganizm(cyberowca2);
+
 
     dodajKomunikat(TypKomunikatu::InicjalizacjaSwiata);
 };
@@ -84,6 +128,8 @@ bool Swiat::zmienKoordynatyOrganizmu(Organizm* organizm, Koordynaty noweKoordyna
 
         plansza[stareKoordynaty.y][stareKoordynaty.x] = nullptr;
         plansza[noweKoordynaty.y][noweKoordynaty.x] = organizm;
+
+        organizm->setKoordynaty(noweKoordynaty);
         return true;
     }
     return false;
@@ -130,10 +176,12 @@ void Swiat::wykonajTure() {
         return a->getWiek() > b->getWiek();
     });
 
-    for (int i=0; i < organizmy.size();i++ ) {
+    for (int i=0; i < organizmy.size(); i++ ) {
         if (organizmy[i] != nullptr) { // zjedzony czy nie
             organizmy[i]->akcja();
-            organizmy[i]->zwiekszWiek();
+            if (organizmy[i] != nullptr) { // sprawdzam ponownie zeby zobaczyc czy dany organizm dalej zyje po akjci
+                organizmy[i]->zwiekszWiek();
+            }
         };
     };
 
@@ -240,6 +288,11 @@ void Swiat::dodajKomunikat(TypKomunikatu typ) {
         tekst += "Nieznany komunikat";
     };
     komunikaty.push_back(tekst);
+};
+
+void Swiat::dodajKomunikat(std::string tekst) {
+    std::string komunikat = "log: " + tekst;
+    komunikaty.push_back(komunikat);
 };
 
 bool Swiat::czyNaMapie(Koordynaty koordynaty) {
