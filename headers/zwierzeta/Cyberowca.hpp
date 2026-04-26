@@ -8,6 +8,7 @@ class Cyberowca : public Zwierze {
     public:
         Cyberowca(Koordynaty koordynaty, Swiat* swiat);
         char GetSymbol() override;
+        void akcja() override;
         ~Cyberowca() = default;
 };
 

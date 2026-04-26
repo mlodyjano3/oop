@@ -7,6 +7,7 @@ class Lis : public Zwierze {
     public:
         Lis(Koordynaty koordynaty, Swiat* swiat);
         char GetSymbol() override;
+        void akcja() override;
         ~Lis() = default;
 };
 

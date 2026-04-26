@@ -34,6 +34,7 @@ class Organizm {
 
         void setKoordynaty(Koordynaty noweKoordynaty);
         void setSila(int nowaSila);
+        void setWiek(int nowyWiek);
 
         Koordynaty wybierzNoweKoordynaty() const;
         Koordynaty wybierzNoweKoordynatyNoworodka(Organizm* rodzic, Organizm* rodzic2) const;

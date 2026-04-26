@@ -23,6 +23,10 @@ TypZwierzecia Zwierze::getTypZwierzecia() const {
     return this->typZwierzecia;
 };
 
+Koordynaty Zwierze::getPoprzednieKoordynaty() const {
+    return this->poprzednieKoordynaty;
+};
+
 void Zwierze::kolizja(Organizm* kolidujacy) {
     TypOrganizmu this_typ_organizmu = this->getTypOrganizmu();
     TypOrganizmu typ_kolidujacego = kolidujacy->getTypOrganizmu();
@@ -39,29 +43,6 @@ void Zwierze::kolizja(Organizm* kolidujacy) {
             };
 
             Organizm* noworodek = nullptr;
-
-            switch(this->getTypZwierzecia()) {
-                case TypZwierzecia::WILK:
-                    noworodek = new Wilk(koordynaty_noworodka, this->swiat);
-                    break;
-                case TypZwierzecia::OWCA:
-                    noworodek = new Owca(koordynaty_noworodka, this->swiat);
-                    break;
-                case TypZwierzecia::LIS:
-                    noworodek = new Lis(koordynaty_noworodka, this->swiat);
-                    break;
-                case TypZwierzecia::ZOLW:
-                    noworodek = new Zolw(koordynaty_noworodka, this->swiat);
-                    break;
-                case TypZwierzecia::ANTYLOPA:
-                    noworodek = new Antylopa(koordynaty_noworodka, this->swiat);
-                    break;
-                case TypZwierzecia::CYBEROWCA:
-                    noworodek = new Cyberowca(koordynaty_noworodka, this->swiat);
-                    break;
-                default:
-                    break;
-            }
 
             if (noworodek != nullptr) {
                 if (!swiat->czyWolne(koordynaty_noworodka)) {

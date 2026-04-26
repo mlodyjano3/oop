@@ -17,6 +17,7 @@ class Zwierze : public Organizm {
         void akcja() override;
 
         TypZwierzecia getTypZwierzecia() const;
+        Koordynaty getPoprzednieKoordynaty() const;
 
         virtual ~Zwierze() = default;
 };

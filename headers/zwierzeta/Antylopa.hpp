@@ -7,6 +7,8 @@ class Antylopa : public Zwierze {
     public:
         Antylopa(Koordynaty koordynaty, Swiat* swiat);
         char GetSymbol() override;
+        void akcja() override;
+        void kolizja(Organizm* atakujacy) override;
         ~Antylopa() = default;
 };
 

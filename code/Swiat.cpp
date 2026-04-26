@@ -148,6 +148,10 @@ bool Swiat::czyWolne(Koordynaty koordynaty) {
     return plansza[koordynaty.y][koordynaty.x] == nullptr;
 };
 
+const std::vector<Organizm*>& Swiat::getOrganizmy() const {
+    return organizmy;
+}
+
 
 void Swiat::wezInputUzytkownika() {
     char znak;

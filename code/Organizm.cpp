@@ -22,6 +22,10 @@ int Organizm::getWiek() const {
 
 void Organizm::zwiekszWiek() {
     this->wiek++;
+};
+
+void Organizm::setWiek(int nowyWiek) {
+    this->wiek = nowyWiek;
 }
 
 int Organizm::getSila() const {
@@ -105,7 +109,7 @@ Koordynaty Organizm::wybierzNoweKoordynatyNoworodka(Organizm* rodzic, Organizm* 
     std::vector<Koordynaty> dostepneMozliwosci;
     for ( int i = 0; i < 16; i++ ) {
         Koordynaty potencjalneKoordynaty = mozliwosci[i];
-        if ( swiat->czyNaMapie(potencjalneKoordynaty) ) {
+        if ( swiat->czyNaMapie(potencjalneKoordynaty) && swiat->czyWolne(potencjalneKoordynaty) ) {
             dostepneMozliwosci.push_back(potencjalneKoordynaty);
         };
     };

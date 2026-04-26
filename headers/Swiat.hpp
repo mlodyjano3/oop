@@ -26,6 +26,8 @@ class Swiat {
     public:
         Swiat(int dlugosc, int wysokosc);
 
+        const std::vector<Organizm*>& getOrganizmy() const;
+
         int getDlugosc() const;
         int getWysokosc() const;
 
