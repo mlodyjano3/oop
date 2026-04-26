@@ -7,6 +7,7 @@
 
 class Zwierze : public Organizm {
     protected:
+        Koordynaty poprzednieKoordynaty;
         TypZwierzecia typZwierzecia;
         
         Zwierze(TypZwierzecia typ, Koordynaty koordynaty, Swiat* swiat);

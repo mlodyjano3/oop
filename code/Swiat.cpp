@@ -84,9 +84,8 @@ void Swiat::dodajOrganizm(Organizm* organizm) {
     if (plansza[koordynaty_organizmu.y][koordynaty_organizmu.x] == nullptr) {
         plansza[koordynaty_organizmu.y][koordynaty_organizmu.x] = organizm;
         organizmy.push_back(organizm);
+        dodajKomunikat(TypKomunikatu::NowyOrganizm);
     };
-
-    dodajKomunikat(TypKomunikatu::NowyOrganizm);
 };
 
 
@@ -312,6 +311,8 @@ void Swiat::wczytajStanSwiata() {
 
 Swiat::~Swiat() {
     for (Organizm* organizm : organizmy) {
-        delete organizm;
+        if (organizm != nullptr) {
+            delete organizm;
+        };
     };
 };

@@ -64,15 +64,45 @@ void Zwierze::kolizja(Organizm* kolidujacy) {
             }
 
             if (noworodek != nullptr) {
-                if (swiat->czyWolne(noworodek->getKoordynaty())) {
-                    swiat->zmienKoordynatyOrganizmu(noworodek, koordynaty_noworodka);
-                } else {
-                    // usuwanie noworodka jezeli nie ma miejsac na niego 
-                    delete noworodek;
+                if (!swiat->czyWolne(koordynaty_noworodka)) {
                     return;
-                }
-                swiat->dodajOrganizm(noworodek);
-                std::string komunikat = "Nowe zwierze: " + std::to_string(noworodek->getTypOrganizmu()) + " na koordynatach: (" + std::to_string(noworodek->getKoordynaty().x) + ", " + std::to_string(noworodek->getKoordynaty().y) + ")";
+                };
+
+                Organizm* noworodek = nullptr;
+                switch(this->getTypZwierzecia()) {
+                    case WILK: {
+                        noworodek = new Wilk(koordynaty_noworodka, swiat);
+                        break;
+                    };
+                    case ZOLW: {
+                        noworodek = new Zolw(koordynaty_noworodka, swiat);
+                        break;
+                    };
+                    case OWCA: {
+                        noworodek = new Owca(koordynaty_noworodka, swiat);
+                        break;
+                    };
+                    case LIS: {
+                        noworodek = new Lis(koordynaty_noworodka, swiat);
+                        break;
+                    };
+                    case CYBEROWCA: {
+                        noworodek = new Cyberowca(koordynaty_noworodka, swiat);
+                        break;
+                    };
+                    case ANTYLOPA: {
+                        noworodek = new Antylopa(koordynaty_noworodka, swiat);
+                        break;
+                    };
+
+                };
+
+                if (noworodek != nullptr) {
+                    swiat->dodajOrganizm(noworodek);
+                    swiat->dodajKomunikat("Narodziny: nowe zwierze na (" + 
+                        std::to_string(koordynaty_noworodka.x) + "," + 
+                        std::to_string(koordynaty_noworodka.y) + ")");
+                };
             };
             
             return;
@@ -97,6 +127,8 @@ void Zwierze::kolizja(Organizm* kolidujacy) {
 };
 
 void Zwierze::akcja() {
+    poprzednieKoordynaty = this->koordynaty;
+
     Koordynaty nowe_koordynaty = this->wybierzNoweKoordynaty();
     if (nowe_koordynaty.x == this->koordynaty.x && nowe_koordynaty.y == this->koordynaty.y) return;
 

@@ -13,6 +13,7 @@ class Roslina : public Organizm {
         void kolizja(Organizm* atakujacy) override;
         virtual ~Roslina() = default;
         virtual void rozrost() = 0;
+        void akcja() override;
 
     protected:
         

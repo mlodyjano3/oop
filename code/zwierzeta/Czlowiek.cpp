@@ -50,6 +50,9 @@ void Czlowiek::akcja() {
         return; 
     };
 
+    kierunekRuchu.dx = 0;
+    kierunekRuchu.dy = 0;
+
     if (swiat->czyNaMapie(noweKoordynaty)) {
         bool czyWolne = swiat->czyWolne(noweKoordynaty);
 
@@ -67,9 +70,6 @@ void Czlowiek::akcja() {
             };
         };
     };
-
-    kierunekRuchu.dx = 0;
-    kierunekRuchu.dy = 0;
 };
 
 Kierunek Czlowiek::getKierunek() const {

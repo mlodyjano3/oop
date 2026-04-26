@@ -8,6 +8,9 @@ class Zolw : public Zwierze {
         Zolw(Koordynaty koordynaty, Swiat* swiat);
         char GetSymbol() override;
         ~Zolw() = default;
+
+        void akcja() override;
+        void kolizja(Organizm* atakujacy) override;
 };
 
 #endif
