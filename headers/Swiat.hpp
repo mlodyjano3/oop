@@ -23,6 +23,8 @@ class Swiat {
         std::vector<std::string> komunikaty;
 
         Czlowiek *czlowiek;
+
+        Organizm* stworzOrganizm(char symbol, Koordynaty k);
     public:
         Swiat(int dlugosc, int wysokosc);
 

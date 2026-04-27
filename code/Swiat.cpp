@@ -19,6 +19,13 @@
 #include "../headers/zwierzeta/Wilk.hpp"
 #include "../headers/zwierzeta/Zolw.hpp"
 
+#include <fstream>
+#include "../headers/rosliny/Trawa.hpp"
+#include "../headers/rosliny/Mlecz.hpp"
+#include "../headers/rosliny/Guarana.hpp"
+#include "../headers/rosliny/WilczeJagody.hpp"
+#include "../headers/rosliny/BarszczSosnowskiego.hpp"
+
 
 
 Swiat::Swiat(int dlugosc, int wysokosc) {
@@ -64,6 +71,17 @@ Swiat::Swiat(int dlugosc, int wysokosc) {
     dodajOrganizm(owca2);
     dodajOrganizm(cyberowca1);
     dodajOrganizm(cyberowca2);
+
+
+    dodajOrganizm(new Trawa({22, 8}, this));
+    dodajOrganizm(new Mlecz({18, 15}, this));
+    dodajOrganizm(new Mlecz({25, 20}, this));
+    dodajOrganizm(new Guarana({10, 20}, this));
+    dodajOrganizm(new Guarana({17, 12}, this));
+    dodajOrganizm(new WilczeJagody({7, 25}, this));
+    dodajOrganizm(new WilczeJagody({28, 4}, this));
+    dodajOrganizm(new BarszczSosnowskiego({20, 20}, this));
+    dodajOrganizm(new BarszczSosnowskiego({25, 15}, this));
 
 
     dodajKomunikat(TypKomunikatu::InicjalizacjaSwiata);
@@ -156,12 +174,14 @@ const std::vector<Organizm*>& Swiat::getOrganizmy() const {
 void Swiat::wezInputUzytkownika() {
     char znak;
     rysujPoziomaLinie();
-    rysujTekst("Wprowadz kierunek ruchu czlowieka (w - gora, s - dol, a - lewo, d - prawo): ");
+    rysujTekst("Ruch: w/a/s/d | Tarcza Alzura: q | Zapis: z | Wczytaj: x");
     std::cin >> znak;
 
-
-    czlowiek->ustawKierunek(znak);
-};
+    if (znak == 'q' || znak == 'Q') czlowiek->aktywujUmiejetnosc();
+    else if (znak == 'z' || znak == 'Z') zapiszStanSwiata();
+    else if (znak == 'x' || znak == 'X') wczytajStanSwiata();
+    else czlowiek->ustawKierunek(znak);
+}
 
 
 
@@ -249,6 +269,19 @@ void Swiat::rysujInterfejs() {
     rysujTekst("Tura: " + std::to_string(tura));
     rysujTekst("Liczba organizmow: " + std::to_string(organizmy.size()));
 
+    // status tarczty alzura
+    std::string statusTarczy;
+    if (this->czlowiek->getUmiejetnoscAktywna()) {
+        statusTarczy = "Tarcza Alzura: AKTYWNA (" +
+            std::to_string(this->czlowiek->getTuryAktywnosci()) + " tur pozostalo)";
+    } else if (this->czlowiek->getTuryOdnowienia() > 0) {
+        statusTarczy = "Tarcza Alzura: cooldown (" +
+            std::to_string(this->czlowiek->getTuryOdnowienia()) + " tur)";
+    } else {
+        statusTarczy = "Tarcza Alzura: gotowa - nacisnij [q]";
+    };
+    rysujTekst(statusTarczy);
+
     rysujPoziomaLinie(); // koniec interface, swiat
 
     rysujSwiat();
@@ -306,11 +339,115 @@ bool Swiat::czyNaMapie(Koordynaty koordynaty) {
 };
 
 
-void Swiat::zapiszStanSwiata() {
+// --- fabryka: tworzy organizm na podstawie symbolu z pliku ---
+// uzywana wylacznie przez wczytajStanSwiata()
+Organizm* Swiat::stworzOrganizm(char symbol, Koordynaty k) {
+    switch (symbol) {
+        case 'W': return new Wilk(k, this);
+        case 'O': return new Owca(k, this);
+        case 'L': return new Lis(k, this);
+        case 'Z': return new Zolw(k, this);
+        case 'A': return new Antylopa(k, this);
+        case 'C': return new Cyberowca(k, this);
+        case 'T': return new Trawa(k, this);
+        case 'M': return new Mlecz(k, this);
+        case 'G': return new Guarana(k, this);
+        case 'J': return new WilczeJagody(k, this);
+        case 'B': return new BarszczSosnowskiego(k, this);
+        default:  return nullptr; // nieznany symbol - ignoruj
+    };
+};
 
-}
+// --- zapis: kazdy organizm jako jedna linia w pliku ---
+// format: SYMBOL x y wiek sila [dla & dodatkowo: umiejetnosc turyA turyO]
+void Swiat::zapiszStanSwiata() {
+    std::ofstream plik(NAZWA_PLIKU_ZAPISU);
+    if (!plik.is_open()) {
+        this->dodajKomunikat("Blad: nie mozna otworzyc pliku do zapisu!");
+        return;
+    };
+
+    plik << "TURA " << this->tura << "\n";
+
+    for (Organizm* org : this->organizmy) {
+        if (org == nullptr) continue;
+        plik << org->GetSymbol() << " "
+             << org->getKoordynaty().x << " "
+             << org->getKoordynaty().y << " "
+             << org->getWiek() << " "
+             << org->getSila();
+        // dla czlowieka zapisz tez stan tarczy
+        if (org->GetSymbol() == '&') {
+            plik << " " << this->czlowiek->getUmiejetnoscAktywna()
+                 << " " << this->czlowiek->getTuryAktywnosci()
+                 << " " << this->czlowiek->getTuryOdnowienia();
+        };
+        plik << "\n";
+    };
+
+    plik.close();
+    this->dodajKomunikat("Zapisano stan swiata do pliku " + NAZWA_PLIKU_ZAPISU);
+};
+
 
 void Swiat::wczytajStanSwiata() {
+    std::ifstream plik(NAZWA_PLIKU_ZAPISU);
+    if (!plik.is_open()) {
+        this->dodajKomunikat("Blad: nie mozna otworzyc pliku do odczytu!");
+        return;
+    };
+
+    // wyczysc stary swiat - usun wszystko oprocz czlowieka (usuwamy go osobno nizej)
+    for (Organizm* org : this->organizmy) {
+        if (org != nullptr && org != this->czlowiek) delete org;
+    };
+    if (this->czlowiek != nullptr) delete this->czlowiek;
+    this->organizmy.clear();
+    for (auto& rzad : this->plansza) std::fill(rzad.begin(), rzad.end(), nullptr);
+    this->czlowiek = nullptr;
+
+    // pierwsza linia: numer tury
+    std::string linia;
+    std::getline(plik, linia);
+    this->tura = std::stoi(linia.substr(5)); // "TURA 15" -> 15
+
+    // kolejne linie: organizmy
+    while (std::getline(plik, linia)) {
+        if (linia.empty()) continue;
+
+        std::istringstream ss(linia);
+        char symbol;
+        int x, y, wiek, sila;
+        ss >> symbol >> x >> y >> wiek >> sila;
+
+        if (symbol == '&') {
+            // czlowiek - specjalny przypadek, wczytaj tez stan tarczy
+            this->czlowiek = new Czlowiek({x, y}, this);
+            this->czlowiek->setWiek(wiek);
+            this->czlowiek->setSila(sila);
+
+            bool aktywna = false;
+            int turyA = 0, turyO = 0;
+            if (ss >> aktywna >> turyA >> turyO) {
+                this->czlowiek->wczytajStanUmiejetnosci(aktywna, turyA, turyO);
+            };
+
+            // dodaj czlowieka bezposrednio (nie przez dodajOrganizm zeby nie logowac smieci)
+            this->plansza[y][x] = this->czlowiek;
+            this->organizmy.push_back(this->czlowiek);
+        } else {
+            // zwykly organizm - uzyj fabryki
+            Organizm* org = this->stworzOrganizm(symbol, {x, y});
+            if (org != nullptr) {
+                org->setWiek(wiek);
+                org->setSila(sila);
+                this->dodajOrganizm(org);
+            };
+        };
+    };
+
+    plik.close();
+    this->dodajKomunikat("Wczytano stan swiata z pliku " + NAZWA_PLIKU_ZAPISU);
 };
 
 Swiat::~Swiat() {
