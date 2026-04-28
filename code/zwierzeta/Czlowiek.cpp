@@ -78,6 +78,9 @@ bool Czlowiek::czyOdbilAtak(Organizm* atakujacy) {
 };
 
 void Czlowiek::akcja() {
+    Swiat* sw = swiat;
+    Czlowiek* ja = this;
+
     Koordynaty nowe = {
         this->koordynaty.x + kierunekRuchu.dx,
         this->koordynaty.y + kierunekRuchu.dy
@@ -85,12 +88,15 @@ void Czlowiek::akcja() {
     kierunekRuchu = {0, 0}; // reset kierunku
 
     if (nowe.x != this->koordynaty.x || nowe.y != this->koordynaty.y) {
-        if (swiat->czyNaMapie(nowe)) {
-            if (swiat->czyWolne(nowe)) {
-                swiat->zmienKoordynatyOrganizmu(this, nowe);
+        if (sw->czyNaMapie(nowe)) {
+            if (sw->czyWolne(nowe)) {
+                sw->zmienKoordynatyOrganizmu(this, nowe);
             } else {
-                Organizm* kolidujacy = swiat->getOrganizmAt(nowe);
+                Organizm* kolidujacy = sw->getOrganizmAt(nowe);
                 if (kolidujacy != nullptr) this->kolizja(kolidujacy);
+                if (sw->getCzlowiek() != ja) {
+                    return;
+                }
             };
         };
     };

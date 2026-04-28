@@ -20,6 +20,7 @@ Koordynaty Zwierze::getPoprzednieKoordynaty() const {
 
 
 void Zwierze::kolizja(Organizm* kolidujacy) {
+    Swiat* sw = swiat;
 
     if (this->GetSymbol() == kolidujacy->GetSymbol()) {
         if (this->wiek == 0 || kolidujacy->getWiek() == 0) return;
@@ -27,8 +28,8 @@ void Zwierze::kolizja(Organizm* kolidujacy) {
         if (kNoworodka.x == -1 && kNoworodka.y == -1) return;
         Organizm* noworodek = this->stworzPotomka(kNoworodka);
         if (noworodek != nullptr) {
-            swiat->dodajOrganizm(noworodek);
-            swiat->dodajKomunikat("Narodziny: " + std::string(1, this->GetSymbol()) +
+            sw->dodajOrganizm(noworodek);
+            sw->dodajKomunikat("Narodziny: " + std::string(1, this->GetSymbol()) +
                 " na (" + std::to_string(kNoworodka.x) + "," +
                 std::to_string(kNoworodka.y) + ")");
         }
@@ -42,7 +43,6 @@ void Zwierze::kolizja(Organizm* kolidujacy) {
         Koordynaty celPola = kolidujacy->getKoordynaty();
         Koordynaty mojePole = this->getKoordynaty();
 
-        Swiat* sw = swiat;
         kolidujacy->kolizja(this);
 
         Organizm* survivor = sw->getOrganizmAt(mojePole);
@@ -58,18 +58,18 @@ void Zwierze::kolizja(Organizm* kolidujacy) {
         char symbolZwyciezcy = this->GetSymbol();
         char symbolPokonanego = kolidujacy->GetSymbol();
 
-        swiat->usunOrganizm(kolidujacy);
-        swiat->zmienKoordynatyOrganizmu(this, celPola);
+        sw->usunOrganizm(kolidujacy);
+        sw->zmienKoordynatyOrganizmu(this, celPola);
         
-        swiat->dodajKomunikat(std::string(1, symbolZwyciezcy) + " pokonat " +
+        sw->dodajKomunikat(std::string(1, symbolZwyciezcy) + " pokonat " +
             std::string(1, symbolPokonanego));
     } else {
         char symbolZwyciezcy = kolidujacy->GetSymbol();
         char symbolPokonanego = this->GetSymbol();
         
-        swiat->usunOrganizm(this);
+        sw->usunOrganizm(this);
         
-        swiat->dodajKomunikat(std::string(1, symbolZwyciezcy) + " pokonat " +
+        sw->dodajKomunikat(std::string(1, symbolZwyciezcy) + " pokonat " +
             std::string(1, symbolPokonanego));
     };
 }

@@ -17,6 +17,8 @@ class Swiat {
     private:
         Wymiary wymiary;
         int tura;
+        bool graSkonczona;
+        std::string komunikatKonca;
 
         std::vector<Organizm*> organizmy;
         std::vector<std::vector<Organizm*>> plansza;
@@ -25,23 +27,42 @@ class Swiat {
         Czlowiek *czlowiek;
 
         Organizm* stworzOrganizm(char symbol, Koordynaty k);
+        bool dodajOrganizmWewnetrznie(Organizm* organizm, bool ignorujLimity);
+        void ustawRozmiarPlanszy(int dlugosc, int wysokosc);
+        void wyczyscSwiat();
+        void usunPusteWpisy();
+        void inicjalizujDomyslneOrganizmy();
+        Koordynaty znajdzLosoweWolnePole() const;
+        Koordynaty znajdzNajblizszeWolnePoleOdSrodka() const;
+        int getPojemnoscPlanszy() const;
+        int getMaksLiczbaRoslin() const;
+        int getMaksLiczbaZwierzat() const;
+        int getSzerokoscOkna() const;
+        bool czyMoznaDodacOrganizm(Organizm* organizm) const;
     public:
-        Swiat(int dlugosc, int wysokosc);
+        Swiat(int dlugosc, int wysokosc, bool inicjalizujDomyslnie = true);
 
         const std::vector<Organizm*>& getOrganizmy() const;
+        Czlowiek* getCzlowiek() const;
 
         int getDlugosc() const;
         int getWysokosc() const;
+        int getTura() const;
+        int getLiczbaOrganizmow() const;
+        int getLiczbaRoslin() const;
+        int getLiczbaZwierzat() const;
+        bool czyGraSkonczona() const;
+        const std::string& getKomunikatKonca() const;
 
         void dodajOrganizm(Organizm* organizm);
         void usunOrganizm(Organizm* organizm);
         bool porownajOrganizmy(Organizm* a, Organizm* b);
         bool zmienKoordynatyOrganizmu(Organizm* organizm, Koordynaty noweKoordynaty);
 
-        Organizm* getOrganizmAt(Koordynaty koordynaty);
+        Organizm* getOrganizmAt(Koordynaty koordynaty) const;
 
-        bool czyWolne(Koordynaty koordynaty);
-        bool czyNaMapie(Koordynaty koordynaty);
+        bool czyWolne(Koordynaty koordynaty) const;
+        bool czyNaMapie(Koordynaty koordynaty) const;
 
         void wezInputUzytkownika();
         void wykonajTure();
@@ -58,7 +79,9 @@ class Swiat {
 
 
         void zapiszStanSwiata();
-        void wczytajStanSwiata();
+        void zapiszStanSwiata(const std::string& sciezka);
+        bool wczytajStanSwiata();
+        bool wczytajStanSwiata(const std::string& sciezka);
 
         ~Swiat();
 };

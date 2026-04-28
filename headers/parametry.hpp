@@ -4,6 +4,7 @@
 #include <string>
 
 const std::string NAZWA_PLIKU_ZAPISU = "swiat.txt";
+const std::string KATALOG_PRESETOW = "presety";
 
 
 // ------------------------------------------------------------------------
@@ -16,6 +17,7 @@ const int PIXELE_PER_POLE = 1 + 2; // 1 na znak + 2 na padding
 
 const int WYSOKOSC_PLANSZY = 30; // ile pol jest na planszy
 const int SZEROKOSC_PLANSZY = 30;
+const int MINIMALNY_WYMIAR_PLANSZY = 1;
 
 const int ILOSC_PIXELI_NA_MAPIE = WYSOKOSC_PLANSZY * SZEROKOSC_PLANSZY * PIXELE_PER_POLE * PIXELE_PER_POLE;
 
@@ -28,12 +30,15 @@ const int WYSOKOSC_MAPY_W_PIXELACH = WYSOKOSC_PLANSZY * PIXELE_PER_POLE;
 const int MAX_ROSLIN = 10;
 const int MAX_ZWIERZAT = 10;
 const int MAX_ORGANIZMOW_LACZNIE = MAX_ROSLIN + MAX_ZWIERZAT;
+const int DZIELNIK_LIMITU_ROSLIN = 20;
+const int DZIELNIK_LIMITU_ZWIERZAT = 15;
 
 
 const int WYSOKOSC_INTERFEJSU_PIXELE = 30;
 const int SZEROKOSC_INTERFEJSU_PIXELE = SZEROKOSC_MAPY_W_PIXELACH;
 
 const int MAX_KOMUNIKATOW = 10;
+const int MAX_ZAPAMIETANYCH_KOMUNIKATOW = 200;
 const int WYSOKOSC_KOMUNIKATOW_PIXELE = MAX_KOMUNIKATOW;
 const int SZEROKOSC_KOMUNIKATOW_PIXELE = SZEROKOSC_MAPY_W_PIXELACH;
 
