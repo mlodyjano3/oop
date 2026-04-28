@@ -97,15 +97,21 @@ int Swiat::getWysokosc() const {
 void Swiat::dodajOrganizm(Organizm* organizm) {
     if (organizm == nullptr) return;
 
-    Koordynaty koordynaty_organizmu = organizm->getKoordynaty();
+    Koordynaty k = organizm->getKoordynaty();
 
-    if (plansza[koordynaty_organizmu.y][koordynaty_organizmu.x] == nullptr) {
-        plansza[koordynaty_organizmu.y][koordynaty_organizmu.x] = organizm;
+    if (!czyNaMapie(k)) {
+        delete organizm;
+        return;
+    }
+
+    if (plansza[k.y][k.x] == nullptr) {
+        plansza[k.y][k.x] = organizm;
         organizmy.push_back(organizm);
         dodajKomunikat(TypKomunikatu::NowyOrganizm);
-    };
-};
-
+    } else {
+        delete organizm;
+    }
+}
 
 void Swiat::usunOrganizm(Organizm* organizm) {
     if (organizm == nullptr) return;
@@ -446,6 +452,24 @@ void Swiat::wczytajStanSwiata() {
     };
 
     plik.close();
+
+    // jesli plik nie ma czlowieka to tworzymy domyslnego
+    if (czlowiek == nullptr) {
+        Koordynaty srodek = {wymiary.dlugosc / 2, wymiary.wysokosc / 2};
+        // znajdź wolne pole w pobliżu środka
+        if (!czyWolne(srodek)) {
+            srodek = {0, 0};
+            for (int y = 0; y < wymiary.wysokosc && !czyWolne(srodek); y++)
+                for (int x = 0; x < wymiary.dlugosc && !czyWolne(srodek); x++)
+                    srodek = {x, y};
+        }
+        czlowiek = new Czlowiek(srodek, this);
+        plansza[srodek.y][srodek.x] = czlowiek;
+        organizmy.push_back(czlowiek);
+        dodajKomunikat("Ostrzezenie: brak czlowieka w pliku - stworzono domyslnego");
+    };
+
+    
     this->dodajKomunikat("Wczytano stan swiata z pliku " + NAZWA_PLIKU_ZAPISU);
 };
 

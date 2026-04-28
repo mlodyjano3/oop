@@ -43,11 +43,14 @@ void BarszczSosnowskiego::akcja() {
 }
 
 void BarszczSosnowskiego::kolizja(Organizm* atakujacy) {
+    if (atakujacy == nullptr) return;
+
     if (dynamic_cast<Cyberowca*>(atakujacy) != nullptr) {
         swiat->dodajKomunikat("Cyberowca zjadla Barszcz Sosnowskiego!");
         swiat->usunOrganizm(this);
     } else {
-        swiat->dodajKomunikat("Barszcz Sosnowskiego: " + std::string(1, atakujacy->GetSymbol()) + " zginal!");
+        swiat->dodajKomunikat("Barszcz Sosnowskiego: " +
+            std::string(1, atakujacy->GetSymbol()) + " zginal!");
         swiat->usunOrganizm(atakujacy);
         swiat->usunOrganizm(this);
     }

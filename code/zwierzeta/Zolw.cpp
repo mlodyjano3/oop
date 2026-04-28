@@ -11,8 +11,8 @@ Zolw::Zolw(Koordynaty koordynaty, Swiat* swiat)
 
 // 75% szans na bezruch
 void Zolw::akcja() {
-    if (rand() % 4 != 0) return;
     poprzednieKoordynaty = this->koordynaty;
+    if (rand() % 4 != 0) return;
     Zwierze::akcja();
 }
 

@@ -23,18 +23,17 @@ void Zwierze::kolizja(Organizm* kolidujacy) {
 
     if (this->GetSymbol() == kolidujacy->GetSymbol()) {
         if (this->wiek == 0 || kolidujacy->getWiek() == 0) return;
-
         Koordynaty kNoworodka = this->wybierzNoweKoordynatyNoworodka(this, kolidujacy);
         if (kNoworodka.x == -1 && kNoworodka.y == -1) return;
-
         Organizm* noworodek = this->stworzPotomka(kNoworodka);
         if (noworodek != nullptr) {
             swiat->dodajOrganizm(noworodek);
-            swiat->dodajKomunikat("Narodziny: " + std::string(1, this->GetSymbol()) + " na (" +
-                std::to_string(kNoworodka.x) + "," + std::to_string(kNoworodka.y) + ")");
-        };
+            swiat->dodajKomunikat("Narodziny: " + std::string(1, this->GetSymbol()) +
+                " na (" + std::to_string(kNoworodka.x) + "," +
+                std::to_string(kNoworodka.y) + ")");
+        }
         return;
-    };
+    }
 
     if (kolidujacy->czyOdbilAtak(this)) return;
     if (kolidujacy->czyUciekl(this)) return;
@@ -42,12 +41,16 @@ void Zwierze::kolizja(Organizm* kolidujacy) {
     if (kolidujacy->getTypOrganizmu() == ROSLINA) {
         Koordynaty celPola = kolidujacy->getKoordynaty();
         Koordynaty mojePole = this->getKoordynaty();
+
+        Swiat* sw = swiat;
         kolidujacy->kolizja(this);
-        if (swiat->getOrganizmAt(mojePole) == this) {
-            swiat->zmienKoordynatyOrganizmu(this, celPola);
-        };
+
+        Organizm* survivor = sw->getOrganizmAt(mojePole);
+        if (survivor != nullptr) {
+            sw->zmienKoordynatyOrganizmu(survivor, celPola);
+        }
         return;
-    };
+    }
 
     if (this->getSila() >= kolidujacy->getSila()) {
         Koordynaty celPola = kolidujacy->getKoordynaty();
@@ -59,22 +62,32 @@ void Zwierze::kolizja(Organizm* kolidujacy) {
         swiat->dodajKomunikat(std::string(1, kolidujacy->GetSymbol()) + " pokonat " +
             std::string(1, this->GetSymbol()));
         swiat->usunOrganizm(this);
-    };
-};
+    }
+}
 
 void Zwierze::akcja() {
-    poprzednieKoordynaty = this->koordynaty; // zapamietaj przed ruchem
+    poprzednieKoordynaty = this->koordynaty;
 
     Koordynaty noweKoordynaty = this->wybierzNoweKoordynaty();
     if (noweKoordynaty.x == this->koordynaty.x &&
-        noweKoordynaty.y == this->koordynaty.y) return; // nie ma gdzie isc
+        noweKoordynaty.y == this->koordynaty.y) return;
 
     if (swiat->czyWolne(noweKoordynaty)) {
         swiat->zmienKoordynatyOrganizmu(this, noweKoordynaty);
     } else {
         Organizm* kolidujacy = swiat->getOrganizmAt(noweKoordynaty);
-        if (kolidujacy != nullptr) {
-            this->kolizja(kolidujacy);
-        }
-    }
-}
+        if (kolidujacy == nullptr) return;
+
+        if (kolidujacy->getTypOrganizmu() == ROSLINA) {
+            Koordynaty starePole = this->koordynaty;
+            Koordynaty celPola = noweKoordynaty;
+            kolidujacy->kolizja(this);
+            if (swiat->getOrganizmAt(starePole) == this) {
+                swiat->zmienKoordynatyOrganizmu(this, celPola);
+            };
+            return;
+        };
+
+        this->kolizja(kolidujacy);
+    };
+};;
