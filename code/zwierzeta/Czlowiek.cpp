@@ -11,79 +11,99 @@ Czlowiek::Czlowiek(Koordynaty koordynaty, Swiat* swiat)
     kierunekRuchu = {0, 0};
 }
 
-char Czlowiek::GetSymbol() { return '&'; }
-Kierunek Czlowiek::getKierunek() const { return kierunekRuchu; }
+char Czlowiek::GetSymbol() {
+    return '&';
+}
+
+Kierunek Czlowiek::getKierunek() const {
+    return kierunekRuchu;
+}
 
 void Czlowiek::ustawKierunek(char znak) {
     kierunekRuchu = {0, 0};
     switch (znak) {
-        case 'w': case 'W': kierunekRuchu.dy = -1; break;
-        case 's': case 'S': kierunekRuchu.dy =  1; break;
-        case 'a': case 'A': kierunekRuchu.dx = -1; break;
-        case 'd': case 'D': kierunekRuchu.dx =  1; break;
-        default: break;
+        case 'w': case 'W': {
+            kierunekRuchu.dy = -1; 
+        };
+        break;
+        case 's': case 'S':{
+            kierunekRuchu.dy =1; 
+            break;
+        };
+        case 'a': case 'A':{
+            kierunekRuchu.dx = -1; 
+            break;
+        };
+        case 'd': case 'D':{ 
+            kierunekRuchu.dx =1; 
+            break;
+        };
+        default:{
+            break;
+        }; 
     }
 }
 
 void Czlowiek::aktywujUmiejetnosc() {
     if (turyOdnowienia > 0) {
-        swiat->dodajKomunikat("Tarcza Alzura: cooldown jeszcze " + std::to_string(turyOdnowienia) + " tur");
+        swiat->dodajKomunikat("Tarcza: cooldown jeszcze " +
+            std::to_string(turyOdnowienia) + " tur");
         return;
     }
     umiejetnoscAktywna = true;
     turyAktywnosci = 5;
     swiat->dodajKomunikat("Tarcza Alzura AKTYWOWANA na 5 tur!");
-}
+};
 
-void Czlowiek::kolizja(Organizm* atakujacy) {
-    if (umiejetnoscAktywna) {
-        Koordynaty stare = atakujacy->getKoordynaty();
-        Koordynaty sasiedzi[8] = {
-            {stare.x-1,stare.y-1},{stare.x-1,stare.y},{stare.x-1,stare.y+1},
-            {stare.x,stare.y-1},{stare.x,stare.y+1},
-            {stare.x+1,stare.y-1},{stare.x+1,stare.y},{stare.x+1,stare.y+1}
-        };
-        std::vector<Koordynaty> wolne;
-        for (int i = 0; i < 8; i++) {
-            if (swiat->czyNaMapie(sasiedzi[i]) && swiat->czyWolne(sasiedzi[i]))
-                wolne.push_back(sasiedzi[i]);
-        }
-        if (!wolne.empty()) {
-            swiat->zmienKoordynatyOrganizmu(atakujacy, wolne[rand() % wolne.size()]);
-            swiat->dodajKomunikat("Tarcza Alzura odephnela " + std::string(1, atakujacy->GetSymbol()) + "!");
-        }
-        return; // bez walki
+
+bool Czlowiek::czyOdbilAtak(Organizm* atakujacy) {
+    if (!umiejetnoscAktywna) return false;
+
+    Koordynaty stare = atakujacy->getKoordynaty();
+    Koordynaty sasiedzi[8] = {
+        {stare.x-1,stare.y-1},{stare.x-1,stare.y},{stare.x-1,stare.y+1},
+        {stare.x,stare.y-1},  {stare.x,stare.y+1},
+        {stare.x+1,stare.y-1},{stare.x+1,stare.y},{stare.x+1,stare.y+1}
+    };
+    std::vector<Koordynaty> wolne;
+    for (int i = 0; i < 8; i++) {
+        if (swiat->czyNaMapie(sasiedzi[i]) && swiat->czyWolne(sasiedzi[i]))
+            wolne.push_back(sasiedzi[i]);
     }
-    Zwierze::kolizja(atakujacy);
-}
+    if (!wolne.empty()) {
+        swiat->zmienKoordynatyOrganizmu(atakujacy, wolne[rand() % wolne.size()]);
+        swiat->dodajKomunikat("Tarcza Alzura odpchela " + std::string(1, atakujacy->GetSymbol()) + "!");
+    }
+    return true; // zawsze odbija gdy tarcza aktywna
+};
 
 void Czlowiek::akcja() {
-    Koordynaty noweKoordynaty = {
+    Koordynaty nowe = {
         this->koordynaty.x + kierunekRuchu.dx,
         this->koordynaty.y + kierunekRuchu.dy
     };
-    kierunekRuchu = {0, 0}; // reset PRZED ruchem
+    kierunekRuchu = {0, 0}; // reset kierunku
 
-    if (noweKoordynaty.x != this->koordynaty.x || noweKoordynaty.y != this->koordynaty.y) {
-        if (swiat->czyNaMapie(noweKoordynaty)) {
-            if (swiat->czyWolne(noweKoordynaty)) {
-                swiat->zmienKoordynatyOrganizmu(this, noweKoordynaty);
+    if (nowe.x != this->koordynaty.x || nowe.y != this->koordynaty.y) {
+        if (swiat->czyNaMapie(nowe)) {
+            if (swiat->czyWolne(nowe)) {
+                swiat->zmienKoordynatyOrganizmu(this, nowe);
             } else {
-                Organizm* kolidujacy = swiat->getOrganizmAt(noweKoordynaty);
+                Organizm* kolidujacy = swiat->getOrganizmAt(nowe);
                 if (kolidujacy != nullptr) this->kolizja(kolidujacy);
-            }
-        }
-    }
+            };
+        };
+    };
 
-    // odliczanie - działa też gdy stoi w miejscu
+    // odliczanie tarczy — dziala tez gdy czlowiek stoi w miejscu
     if (umiejetnoscAktywna) {
         turyAktywnosci--;
         if (turyAktywnosci == 0) {
             umiejetnoscAktywna = false;
             turyOdnowienia = 5;
-            swiat->dodajKomunikat("Tarcza Alzura dezaktywowana. Cooldown: 5 tur.");
-        }
+            swiat->dodajKomunikat("Tarcza Alzura wygasla. Cooldown: 5 tur.");
+        };
     } else if (turyOdnowienia > 0) {
         turyOdnowienia--;
-    }
-}
+    };
+};

@@ -7,10 +7,14 @@ class Zolw : public Zwierze {
     public:
         Zolw(Koordynaty koordynaty, Swiat* swiat);
         char GetSymbol() override;
-        ~Zolw() = default;
 
         void akcja() override;
-        void kolizja(Organizm* atakujacy) override;
+
+        bool czyOdbilAtak(Organizm* atakujacy) override;
+
+        Organizm* stworzPotomka(Koordynaty k) override;
+
+        ~Zolw() = default;
 };
 
 #endif

@@ -6,6 +6,10 @@ Owca::Owca(Koordynaty koordynaty, Swiat* swiat) : Zwierze(TypZwierzecia::OWCA, k
     this->inicjatywa = INICJATYWA_OWCA;
 };
 
+Organizm* Owca::stworzPotomka(Koordynaty k) {
+    return new Owca(k, swiat);
+};
+
 char Owca::GetSymbol() {
     return 'O';
 }

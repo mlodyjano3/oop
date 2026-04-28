@@ -39,7 +39,12 @@ void Lis::akcja() {
         Organizm* kolidujacy = swiat->getOrganizmAt(cel);
         if (kolidujacy != nullptr) this->kolizja(kolidujacy);
     }
-}
+};
+
+
+Organizm* Lis::stworzPotomka(Koordynaty koordynaty) {
+    return new Lis(koordynaty, swiat);
+};
 
 char Lis::GetSymbol() {
     return 'L';

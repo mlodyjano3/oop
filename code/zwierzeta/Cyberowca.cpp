@@ -53,7 +53,12 @@ void Cyberowca::akcja() {
         Organizm* kolidujacy = swiat->getOrganizmAt(cel);
         if (kolidujacy != nullptr) this->kolizja(kolidujacy);
     }
-}
+};
+
+
+Organizm* Cyberowca::stworzPotomka(Koordynaty koordynaty) {
+    return new Cyberowca(koordynaty, swiat);
+};
 
 char Cyberowca::GetSymbol() {
     return 'C';

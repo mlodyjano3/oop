@@ -7,6 +7,8 @@
 class Wilk : public Zwierze {
     public:
         Wilk(Koordynaty koordynaty, Swiat* swiat);
+
+        Organizm* stworzPotomka(Koordynaty k) override;
         char GetSymbol() override;
         ~Wilk() = default;
 };

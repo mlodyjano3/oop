@@ -5,10 +5,8 @@
 
 class Swiat;
 
-
 class Organizm {
     protected:
-    
         TypOrganizmu typOrganizmu;
         Koordynaty koordynaty;
         int wiek;
@@ -17,14 +15,19 @@ class Organizm {
         Swiat* swiat;
 
     public:
-        // Organizm(Koordynaty koordynaty, Swiat* swiat);
-        
-        // musza byc bo tak kaze instrukcja
         virtual void akcja() = 0;
         virtual void kolizja(Organizm* atakujacy) = 0;
         virtual char GetSymbol() = 0;
-        // virtual void rysowanie() = 0; // imo useless bo zrobilbym to w rysujSwiat 
 
+        // Domyslnie zwraca false, uzywane przez zolwia i czlowieka (tarcza)
+        virtual bool czyOdbilAtak(Organizm* atakujacy) {
+            return false;
+        };
+        virtual bool czyUciekl(Organizm* atakujacy){
+            return false; 
+        }
+
+        // gettery / settery
         Koordynaty getKoordynaty() const;
         int getInicjatywa() const;
         int getWiek() const;
@@ -37,9 +40,7 @@ class Organizm {
         void setWiek(int nowyWiek);
 
         Koordynaty wybierzNoweKoordynaty() const;
-        Koordynaty wybierzNoweKoordynatyNoworodka(Organizm* rodzic, Organizm* rodzic2) const;
-        
-
+        Koordynaty wybierzNoweKoordynatyNoworodka(Organizm* r1, Organizm* r2) const;
 
         virtual ~Organizm();
 };

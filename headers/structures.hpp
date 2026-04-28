@@ -34,11 +34,11 @@ enum TypZwierzecia {
 };
 
 enum TypRosliny {
-    Trawa,
-    Mlecz,
-    Guarana,
-    WilczeJagody,
-    BarszczSosnowskiego
+    TRAWA,
+    MLECZ,
+    GUARANA,
+    WILCZEJAGODY,
+    BARSZCZSOSNOWSKIEGO
 };
 
 enum TypKomunikatu {

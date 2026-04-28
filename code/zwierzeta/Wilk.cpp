@@ -6,6 +6,10 @@ Wilk::Wilk(Koordynaty koordynaty, Swiat* swiat) : Zwierze(TypZwierzecia::WILK, k
     this->inicjatywa = INICJATYWA_WILK;
 };
 
+Organizm* Wilk::stworzPotomka(Koordynaty k) {
+    return new Wilk(k, swiat);
+};
+
 char Wilk::GetSymbol() {
     return 'W';
 }

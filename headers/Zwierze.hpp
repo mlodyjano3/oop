@@ -1,17 +1,18 @@
 #ifndef ZWIERZE_HPP
 #define ZWIERZE_HPP
 
-#include "./Organizm.hpp"
-
+#include "Organizm.hpp"
 #include "structures.hpp"
 
 class Zwierze : public Organizm {
     protected:
         Koordynaty poprzednieKoordynaty;
         TypZwierzecia typZwierzecia;
-        
+
         Zwierze(TypZwierzecia typ, Koordynaty koordynaty, Swiat* swiat);
+
     public:
+        virtual Organizm* stworzPotomka(Koordynaty k) = 0;
 
         void kolizja(Organizm* kolidujacy) override;
         void akcja() override;

@@ -1,126 +1,78 @@
 #include "../headers/Zwierze.hpp"
 #include "../headers/Swiat.hpp"
-
-#include "../headers/zwierzeta/Wilk.hpp"
-#include "../headers/zwierzeta/Owca.hpp"
-#include "../headers/zwierzeta/Lis.hpp"
-#include "../headers/zwierzeta/Zolw.hpp"
-#include "../headers/zwierzeta/Antylopa.hpp"
-#include "../headers/zwierzeta/Cyberowca.hpp"
-
+#include <string>
 
 Zwierze::Zwierze(TypZwierzecia typ, Koordynaty koordynaty, Swiat* swiat) {
     this->typOrganizmu = ZWIERZE;
-
     this->typZwierzecia = typ;
     this->koordynaty = koordynaty;
     this->swiat = swiat;
-
     this->wiek = 0;
-};
+}
 
 TypZwierzecia Zwierze::getTypZwierzecia() const {
     return this->typZwierzecia;
-};
+}
 
 Koordynaty Zwierze::getPoprzednieKoordynaty() const {
     return this->poprzednieKoordynaty;
-};
+}
+
 
 void Zwierze::kolizja(Organizm* kolidujacy) {
-    TypOrganizmu this_typ_organizmu = this->getTypOrganizmu();
-    TypOrganizmu typ_kolidujacego = kolidujacy->getTypOrganizmu();
 
-    // czy to ten sam gatunek 
     if (this->GetSymbol() == kolidujacy->GetSymbol()) {
-        if (this->wiek > 0 && kolidujacy->getWiek() > 0) {
-            // rozmnazanie
-            Koordynaty koordynaty_noworodka = this->wybierzNoweKoordynatyNoworodka(this, kolidujacy);
+        // oboje musza byc juz dorosli (wiek > 0), zeby noworodek nie rozmnazal sie w tej samej turze, w ktorej powstal
+        if (this->wiek == 0 || kolidujacy->getWiek() == 0) return;
 
-            // zeby noworodek sie nie rozmnozyl od razu
-            if (koordynaty_noworodka.x == -1 && koordynaty_noworodka.y == -1) {
-                return;
-            };
+        Koordynaty kNoworodka = this->wybierzNoweKoordynatyNoworodka(this, kolidujacy);
+        if (kNoworodka.x == -1 && kNoworodka.y == -1) return; // brak wolnego miejsca
 
-            Organizm* noworodek = nullptr;
+        Organizm* noworodek = this->stworzPotomka(kNoworodka);
+        if (noworodek != nullptr) {
+            swiat->dodajOrganizm(noworodek);
+            swiat->dodajKomunikat("Narodziny: " + std::string(1, this->GetSymbol()) + " na (" + std::to_string(kNoworodka.x) + "," +
+                std::to_string(kNoworodka.y) + ")");
+        }
+        return;
+    }
 
-            if (noworodek != nullptr) {
-                if (!swiat->czyWolne(koordynaty_noworodka)) {
-                    return;
-                };
+    if (kolidujacy->czyOdbilAtak(this)) {
+        // kolidujacy sam obslugl ruch atakujacego w swojej metodzie
+        return;
+    }
 
-                Organizm* noworodek = nullptr;
-                switch(this->getTypZwierzecia()) {
-                    case WILK: {
-                        noworodek = new Wilk(koordynaty_noworodka, swiat);
-                        break;
-                    };
-                    case ZOLW: {
-                        noworodek = new Zolw(koordynaty_noworodka, swiat);
-                        break;
-                    };
-                    case OWCA: {
-                        noworodek = new Owca(koordynaty_noworodka, swiat);
-                        break;
-                    };
-                    case LIS: {
-                        noworodek = new Lis(koordynaty_noworodka, swiat);
-                        break;
-                    };
-                    case CYBEROWCA: {
-                        noworodek = new Cyberowca(koordynaty_noworodka, swiat);
-                        break;
-                    };
-                    case ANTYLOPA: {
-                        noworodek = new Antylopa(koordynaty_noworodka, swiat);
-                        break;
-                    };
+    if (kolidujacy->czyUciekl(this)) {
+        // kolidujacy sam sie przesunal w swojej metodzie
+        return;
+    }
 
-                };
-
-                if (noworodek != nullptr) {
-                    swiat->dodajOrganizm(noworodek);
-                    swiat->dodajKomunikat("Narodziny: nowe zwierze na (" + 
-                        std::to_string(koordynaty_noworodka.x) + "," + 
-                        std::to_string(koordynaty_noworodka.y) + ")");
-                };
-            };
-            
-            return;
-        };
+    if (this->getSila() >= kolidujacy->getSila()) {
+        Koordynaty celPola = kolidujacy->getKoordynaty();
+        swiat->usunOrganizm(kolidujacy);
+        swiat->zmienKoordynatyOrganizmu(this, celPola); // zajmij zwolnione pole
+        swiat->dodajKomunikat(std::string(1, this->GetSymbol()) + " pokonat " +
+            std::string(1, kolidujacy->GetSymbol()));
     } else {
-        // walka
-        int this_sila = this->getSila();
-        int kolidujacy_sila = kolidujacy->getSila();
-        
-        if (this_sila >= kolidujacy_sila) {
-            // wygrywa obiekt this
-            // Koordynaty koordy_kolidujacego = kolidujacy->getKoordynaty();
-            swiat->usunOrganizm(kolidujacy);
-            // swiat->zmienKoordynatyOrganizmu(this, koordy_kolidujacego); 
-        } else {
-            // wygrywa obiekt kolidujacy
-            // Koordynaty koordy_this = this->getKoordynaty();
-            swiat->usunOrganizm(this);
-            // swiat->zmienKoordynatyOrganizmu(kolidujacy, koordy_this);
-        };
+        swiat->dodajKomunikat(std::string(1, kolidujacy->GetSymbol()) + " pokonat " +
+            std::string(1, this->GetSymbol()));
+        swiat->usunOrganizm(this);
     };
 };
 
 void Zwierze::akcja() {
-    poprzednieKoordynaty = this->koordynaty;
+    poprzednieKoordynaty = this->koordynaty; // zapamietaj przed ruchem
 
-    Koordynaty nowe_koordynaty = this->wybierzNoweKoordynaty();
-    if (nowe_koordynaty.x == this->koordynaty.x && nowe_koordynaty.y == this->koordynaty.y) return;
+    Koordynaty noweKoordynaty = this->wybierzNoweKoordynaty();
+    if (noweKoordynaty.x == this->koordynaty.x &&
+        noweKoordynaty.y == this->koordynaty.y) return; // nie ma gdzie isc
 
-    if (swiat->czyWolne(nowe_koordynaty)) {
-        swiat->zmienKoordynatyOrganizmu(this, nowe_koordynaty);
-        this->koordynaty = nowe_koordynaty;
+    if (swiat->czyWolne(noweKoordynaty)) {
+        swiat->zmienKoordynatyOrganizmu(this, noweKoordynaty);
     } else {
-
-        Organizm* kolidujacy = swiat->getOrganizmAt(nowe_koordynaty);
+        Organizm* kolidujacy = swiat->getOrganizmAt(noweKoordynaty);
         if (kolidujacy != nullptr) {
             this->kolizja(kolidujacy);
-        };
-    };
-};
+        }
+    }
+}

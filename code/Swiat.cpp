@@ -163,6 +163,9 @@ Organizm* Swiat::getOrganizmAt(Koordynaty koordynaty) {
 };
 
 bool Swiat::czyWolne(Koordynaty koordynaty) {
+    if (!czyNaMapie(koordynaty)){
+        return false;
+    };
     return plansza[koordynaty.y][koordynaty.x] == nullptr;
 };
 
@@ -192,19 +195,19 @@ void Swiat::wykonajTure() {
     std::sort(organizmy.begin(), organizmy.end(), [](Organizm* a, Organizm* b) {
         if (a == nullptr) return false;
         if (b == nullptr) return true;
-        
         if (a->getInicjatywa() != b->getInicjatywa()) {
             return a->getInicjatywa() > b->getInicjatywa();
-        }
+        };
         return a->getWiek() > b->getWiek();
     });
 
-    for (int i=0; i < organizmy.size(); i++ ) {
-        if (organizmy[i] != nullptr) { // zjedzony czy nie
+    int rozmiarTury = (int)organizmy.size();
+    for (int i = 0; i < rozmiarTury; i++) {
+        if (organizmy[i] != nullptr) {
             organizmy[i]->akcja();
-            if (organizmy[i] != nullptr) { // sprawdzam ponownie zeby zobaczyc czy dany organizm dalej zyje po akjci
+            if (organizmy[i] != nullptr) {
                 organizmy[i]->zwiekszWiek();
-            }
+            };
         };
     };
 
@@ -339,8 +342,6 @@ bool Swiat::czyNaMapie(Koordynaty koordynaty) {
 };
 
 
-// --- fabryka: tworzy organizm na podstawie symbolu z pliku ---
-// uzywana wylacznie przez wczytajStanSwiata()
 Organizm* Swiat::stworzOrganizm(char symbol, Koordynaty k) {
     switch (symbol) {
         case 'W': return new Wilk(k, this);
@@ -397,7 +398,6 @@ void Swiat::wczytajStanSwiata() {
         return;
     };
 
-    // wyczysc stary swiat - usun wszystko oprocz czlowieka (usuwamy go osobno nizej)
     for (Organizm* org : this->organizmy) {
         if (org != nullptr && org != this->czlowiek) delete org;
     };
@@ -406,12 +406,19 @@ void Swiat::wczytajStanSwiata() {
     for (auto& rzad : this->plansza) std::fill(rzad.begin(), rzad.end(), nullptr);
     this->czlowiek = nullptr;
 
-    // pierwsza linia: numer tury
     std::string linia;
-    std::getline(plik, linia);
-    this->tura = std::stoi(linia.substr(5)); // "TURA 15" -> 15
+    if (!std::getline(plik, linia) || linia.size() < 6 || linia.substr(0, 5) != "TURA ") {
+        this->dodajKomunikat("Blad: nieprawidlowy format pliku zapisu!");
+        return;
+    };
 
-    // kolejne linie: organizmy
+    try {
+        this->tura = std::stoi(linia.substr(5));
+    } catch (...) {
+        this->dodajKomunikat("Blad: nie mozna odczytac numeru tury!");
+        return;
+    };
+
     while (std::getline(plik, linia)) {
         if (linia.empty()) continue;
 
@@ -421,7 +428,6 @@ void Swiat::wczytajStanSwiata() {
         ss >> symbol >> x >> y >> wiek >> sila;
 
         if (symbol == '&') {
-            // czlowiek - specjalny przypadek, wczytaj tez stan tarczy
             this->czlowiek = new Czlowiek({x, y}, this);
             this->czlowiek->setWiek(wiek);
             this->czlowiek->setSila(sila);
@@ -432,11 +438,9 @@ void Swiat::wczytajStanSwiata() {
                 this->czlowiek->wczytajStanUmiejetnosci(aktywna, turyA, turyO);
             };
 
-            // dodaj czlowieka bezposrednio (nie przez dodajOrganizm zeby nie logowac smieci)
             this->plansza[y][x] = this->czlowiek;
             this->organizmy.push_back(this->czlowiek);
         } else {
-            // zwykly organizm - uzyj fabryki
             Organizm* org = this->stworzOrganizm(symbol, {x, y});
             if (org != nullptr) {
                 org->setWiek(wiek);
