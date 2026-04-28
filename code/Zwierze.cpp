@@ -22,35 +22,37 @@ Koordynaty Zwierze::getPoprzednieKoordynaty() const {
 void Zwierze::kolizja(Organizm* kolidujacy) {
 
     if (this->GetSymbol() == kolidujacy->GetSymbol()) {
-        // oboje musza byc juz dorosli (wiek > 0), zeby noworodek nie rozmnazal sie w tej samej turze, w ktorej powstal
         if (this->wiek == 0 || kolidujacy->getWiek() == 0) return;
 
         Koordynaty kNoworodka = this->wybierzNoweKoordynatyNoworodka(this, kolidujacy);
-        if (kNoworodka.x == -1 && kNoworodka.y == -1) return; // brak wolnego miejsca
+        if (kNoworodka.x == -1 && kNoworodka.y == -1) return;
 
         Organizm* noworodek = this->stworzPotomka(kNoworodka);
         if (noworodek != nullptr) {
             swiat->dodajOrganizm(noworodek);
-            swiat->dodajKomunikat("Narodziny: " + std::string(1, this->GetSymbol()) + " na (" + std::to_string(kNoworodka.x) + "," +
-                std::to_string(kNoworodka.y) + ")");
-        }
+            swiat->dodajKomunikat("Narodziny: " + std::string(1, this->GetSymbol()) + " na (" +
+                std::to_string(kNoworodka.x) + "," + std::to_string(kNoworodka.y) + ")");
+        };
         return;
-    }
+    };
 
-    if (kolidujacy->czyOdbilAtak(this)) {
-        // kolidujacy sam obslugl ruch atakujacego w swojej metodzie
-        return;
-    }
+    if (kolidujacy->czyOdbilAtak(this)) return;
+    if (kolidujacy->czyUciekl(this)) return;
 
-    if (kolidujacy->czyUciekl(this)) {
-        // kolidujacy sam sie przesunal w swojej metodzie
+    if (kolidujacy->getTypOrganizmu() == ROSLINA) {
+        Koordynaty celPola = kolidujacy->getKoordynaty();
+        Koordynaty mojePole = this->getKoordynaty();
+        kolidujacy->kolizja(this);
+        if (swiat->getOrganizmAt(mojePole) == this) {
+            swiat->zmienKoordynatyOrganizmu(this, celPola);
+        };
         return;
-    }
+    };
 
     if (this->getSila() >= kolidujacy->getSila()) {
         Koordynaty celPola = kolidujacy->getKoordynaty();
         swiat->usunOrganizm(kolidujacy);
-        swiat->zmienKoordynatyOrganizmu(this, celPola); // zajmij zwolnione pole
+        swiat->zmienKoordynatyOrganizmu(this, celPola);
         swiat->dodajKomunikat(std::string(1, this->GetSymbol()) + " pokonat " +
             std::string(1, kolidujacy->GetSymbol()));
     } else {

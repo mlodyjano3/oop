@@ -232,14 +232,9 @@ void Swiat::rysujTekst(std::string text) {
 };
 
 void Swiat::rysujKomunikaty() {
-    int wieksza_wartosc;
-    if (komunikaty.size() > MAX_KOMUNIKATOW) {
-        wieksza_wartosc = MAX_KOMUNIKATOW;
-    } else {
-        wieksza_wartosc = komunikaty.size();
-    };
-
-    for ( int i = wieksza_wartosc - 1; i >= 0 && i < MAX_KOMUNIKATOW && i < komunikaty.size(); i--) {
+    int total = (int)komunikaty.size();
+    int koniec = std::max(0, total - MAX_KOMUNIKATOW);
+    for (int i = total - 1; i >= koniec; i--) {
         rysujTekst(komunikaty[i]);
     };
 };
