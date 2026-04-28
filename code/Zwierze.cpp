@@ -54,15 +54,24 @@ void Zwierze::kolizja(Organizm* kolidujacy) {
 
     if (this->getSila() >= kolidujacy->getSila()) {
         Koordynaty celPola = kolidujacy->getKoordynaty();
+        
+        char symbolZwyciezcy = this->GetSymbol();
+        char symbolPokonanego = kolidujacy->GetSymbol();
+
         swiat->usunOrganizm(kolidujacy);
         swiat->zmienKoordynatyOrganizmu(this, celPola);
-        swiat->dodajKomunikat(std::string(1, this->GetSymbol()) + " pokonat " +
-            std::string(1, kolidujacy->GetSymbol()));
+        
+        swiat->dodajKomunikat(std::string(1, symbolZwyciezcy) + " pokonat " +
+            std::string(1, symbolPokonanego));
     } else {
-        swiat->dodajKomunikat(std::string(1, kolidujacy->GetSymbol()) + " pokonat " +
-            std::string(1, this->GetSymbol()));
+        char symbolZwyciezcy = kolidujacy->GetSymbol();
+        char symbolPokonanego = this->GetSymbol();
+        
         swiat->usunOrganizm(this);
-    }
+        
+        swiat->dodajKomunikat(std::string(1, symbolZwyciezcy) + " pokonat " +
+            std::string(1, symbolPokonanego));
+    };
 }
 
 void Zwierze::akcja() {
@@ -76,17 +85,7 @@ void Zwierze::akcja() {
         swiat->zmienKoordynatyOrganizmu(this, noweKoordynaty);
     } else {
         Organizm* kolidujacy = swiat->getOrganizmAt(noweKoordynaty);
-        if (kolidujacy == nullptr) return;
-
-        if (kolidujacy->getTypOrganizmu() == ROSLINA) {
-            Koordynaty starePole = this->koordynaty;
-            Koordynaty celPola = noweKoordynaty;
-            kolidujacy->kolizja(this);
-            if (swiat->getOrganizmAt(starePole) == this) {
-                swiat->zmienKoordynatyOrganizmu(this, celPola);
-            };
-            return;
-        };
+        if (kolidujacy == nullptr) {return;};
 
         this->kolizja(kolidujacy);
     };

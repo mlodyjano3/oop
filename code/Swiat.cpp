@@ -125,7 +125,11 @@ void Swiat::usunOrganizm(Organizm* organizm) {
             organizmy[i] = nullptr; 
             break;
         }
-    }
+    };
+
+    if (organizm == this->czlowiek) {
+        this->czlowiek = nullptr;
+    };
 
     delete organizm;
 
@@ -186,10 +190,18 @@ void Swiat::wezInputUzytkownika() {
     rysujTekst("Ruch: w/a/s/d | Tarcza Alzura: q | Zapis: z | Wczytaj: x");
     std::cin >> znak;
 
-    if (znak == 'q' || znak == 'Q') czlowiek->aktywujUmiejetnosc();
-    else if (znak == 'z' || znak == 'Z') zapiszStanSwiata();
-    else if (znak == 'x' || znak == 'X') wczytajStanSwiata();
-    else czlowiek->ustawKierunek(znak);
+
+    if (znak == 'q' || znak == 'Q') {
+        if (this->czlowiek != nullptr){
+            czlowiek->aktywujUmiejetnosc();
+        };
+    } else if (znak == 'z' || znak == 'Z'){ 
+        zapiszStanSwiata();
+    } else if (znak == 'x' || znak == 'X') {
+        wczytajStanSwiata();
+    } else {
+        czlowiek->ustawKierunek(znak);
+    };
 }
 
 
@@ -275,14 +287,16 @@ void Swiat::rysujInterfejs() {
 
     // status tarczty alzura
     std::string statusTarczy;
-    if (this->czlowiek->getUmiejetnoscAktywna()) {
-        statusTarczy = "Tarcza Alzura: AKTYWNA (" +
-            std::to_string(this->czlowiek->getTuryAktywnosci()) + " tur pozostalo)";
-    } else if (this->czlowiek->getTuryOdnowienia() > 0) {
-        statusTarczy = "Tarcza Alzura: cooldown (" +
-            std::to_string(this->czlowiek->getTuryOdnowienia()) + " tur)";
-    } else {
-        statusTarczy = "Tarcza Alzura: gotowa - nacisnij [q]";
+    if (this->czlowiek != nullptr) {
+        if (this->czlowiek->getUmiejetnoscAktywna()) {
+            statusTarczy = "Tarcza Alzura: AKTYWNA (" +
+                std::to_string(this->czlowiek->getTuryAktywnosci()) + " tur pozostalo)";
+        } else if (this->czlowiek->getTuryOdnowienia() > 0) {
+            statusTarczy = "Tarcza Alzura: cooldown (" +
+                std::to_string(this->czlowiek->getTuryOdnowienia()) + " tur)";
+        } else {
+            statusTarczy = "Tarcza Alzura: gotowa - nacisnij [q]";
+        };
     };
     rysujTekst(statusTarczy);
 
@@ -360,8 +374,7 @@ Organizm* Swiat::stworzOrganizm(char symbol, Koordynaty k) {
     };
 };
 
-// --- zapis: kazdy organizm jako jedna linia w pliku ---
-// format: SYMBOL x y wiek sila [dla & dodatkowo: umiejetnosc turyA turyO]
+
 void Swiat::zapiszStanSwiata() {
     std::ofstream plik(NAZWA_PLIKU_ZAPISU);
     if (!plik.is_open()) {
